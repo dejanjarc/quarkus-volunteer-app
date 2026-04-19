@@ -1,4 +1,4 @@
-package si.rsj;
+package si.rsj.pu.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 

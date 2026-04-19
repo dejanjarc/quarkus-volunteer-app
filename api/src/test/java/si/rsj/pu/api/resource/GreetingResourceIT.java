@@ -1,4 +1,4 @@
-package si.rsj;
+package si.rsj.pu.api.resource;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

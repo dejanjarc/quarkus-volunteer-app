@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>si.rsj</groupId>
+        <groupId>si.rsj.pu</groupId>
         <artifactId>volunteer-hours-service</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -12,15 +12,9 @@
     <artifactId>api</artifactId>
     <packaging>quarkus</packaging>
 
-    <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <dependency>
-            <groupId>si.rsj</groupId>
+            <groupId>si.rsj.pu</groupId>
             <artifactId>service</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>si.rsj</groupId>
+        <groupId>si.rsj.pu</groupId>
         <artifactId>volunteer-hours-service</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>

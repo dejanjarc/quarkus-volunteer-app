@@ -1,4 +1,4 @@
-package si.rsj;
+package si.rsj.pu.api.resource;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -6,7 +6,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-import si.rsj.GreetingService;
+import si.rsj.pu.service.GreetingService;
 
 @Path("/hello")
 public class GreetingResource {
@@ -19,6 +19,4 @@ public class GreetingResource {
     public String hello() {
         return greetingService.hello();
     }
-
-
 }
