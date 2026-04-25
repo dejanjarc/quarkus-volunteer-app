@@ -1,19 +1,16 @@
 package si.rsj.pu.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import si.rsj.pu.model.enums.VolunteerRole;
+import jakarta.persistence.*;
+import si.rsj.pu.entity.enums.VolunteerRole;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "volunteer")
-public class VolunteerEntity {
+public class Volunteer {
 
     @Id
     public UUID id;
@@ -42,4 +39,7 @@ public class VolunteerEntity {
 
     @Column(name = "joined_at", nullable = false)
     public OffsetDateTime joinedAt;
+
+    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY)
+    public List<HourLog> hourLogs = new ArrayList<>();
 }

@@ -3,11 +3,11 @@ package si.rsj.pu.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import si.rsj.pu.entity.VolunteerEntity;
+import si.rsj.pu.entity.Volunteer;
 import si.rsj.pu.repository.VolunteerRepository;
 import si.rsj.pu.service.command.CreateVolunteerCommand;
-import si.rsj.pu.service.exception.VolunteerAlreadyExistsException;
-import si.rsj.pu.service.exception.VolunteerNotFoundException;
+import si.rsj.pu.service.exception.volunteer.VolunteerAlreadyExistsException;
+import si.rsj.pu.service.exception.volunteer.VolunteerNotFoundException;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -19,7 +19,7 @@ public class VolunteerService {
     VolunteerRepository volunteerRepository;
 
     @Transactional
-    public VolunteerEntity createVolunteer(CreateVolunteerCommand command) {
+    public Volunteer createVolunteer(CreateVolunteerCommand command) {
         volunteerRepository.findByZtsCode(command.ztsCode())
                 .ifPresent(v -> {
                     throw new VolunteerAlreadyExistsException(
@@ -36,7 +36,7 @@ public class VolunteerService {
                     });
         }
 
-        VolunteerEntity volunteer = new VolunteerEntity();
+        Volunteer volunteer = new Volunteer();
         volunteer.id = UUID.randomUUID();
         volunteer.ztsCode = command.ztsCode();
         volunteer.firstName = command.firstName();
@@ -51,7 +51,7 @@ public class VolunteerService {
         return volunteer;
     }
 
-    public VolunteerEntity getVolunteer(UUID id) {
+    public Volunteer getVolunteer(UUID id) {
         return volunteerRepository.findByIdOptional(id)
                 .orElseThrow(() -> new VolunteerNotFoundException(id));
     }

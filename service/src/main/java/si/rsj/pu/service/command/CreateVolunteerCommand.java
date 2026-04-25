@@ -1,6 +1,6 @@
 package si.rsj.pu.service.command;
 
-import si.rsj.pu.model.enums.VolunteerRole;
+import si.rsj.pu.entity.enums.VolunteerRole;
 
 public record CreateVolunteerCommand(
         int ztsCode,

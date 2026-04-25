@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import si.rsj.pu.model.enums.VolunteerRole;
+import si.rsj.pu.entity.enums.VolunteerRole;
 
 public record CreateVolunteerRequest(
     @Positive int ztsCode,

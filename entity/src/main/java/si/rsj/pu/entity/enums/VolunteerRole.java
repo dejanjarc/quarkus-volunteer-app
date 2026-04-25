@@ -1,4 +1,4 @@
-package si.rsj.pu.model.enums;
+package si.rsj.pu.entity.enums;
 
 public enum VolunteerRole {
     STARESINA,

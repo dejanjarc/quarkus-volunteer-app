@@ -1,6 +1,6 @@
 package si.rsj.pu.api.dto.response;
 
-import si.rsj.pu.model.enums.VolunteerRole;
+import si.rsj.pu.entity.enums.VolunteerRole;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
