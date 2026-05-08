@@ -2,12 +2,7 @@ package si.rsj.pu.api.rest;
 
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -18,11 +13,13 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import si.rsj.pu.api.dto.request.CreateEventRequest;
+import si.rsj.pu.api.dto.request.UpdateEventRequest;
 import si.rsj.pu.api.dto.response.EventResponse;
 import si.rsj.pu.api.exception.ErrorResponse;
 import si.rsj.pu.entity.Event;
 import si.rsj.pu.service.EventService;
 import si.rsj.pu.service.command.CreateEventCommand;
+import si.rsj.pu.service.command.UpdateEventCommand;
 
 import java.net.URI;
 import java.util.UUID;
@@ -155,6 +152,23 @@ public class EventController {
     })
     public EventResponse getEvent(@PathParam("id") UUID id) {
         return toResponse(eventService.getEvent(id));
+    }
+
+    @PUT
+    @Path("/{id}")
+    public EventResponse updateEvent(@PathParam("id") UUID id, @Valid UpdateEventRequest request) {
+        Event updated = eventService.updateEvent(
+                id,
+                new UpdateEventCommand(
+                        request.name(),
+                        request.description(),
+                        request.location(),
+                        request.startDate(),
+                        request.endDate()
+                )
+        );
+
+        return toResponse(updated);
     }
 
     private EventResponse toResponse(Event event) {
