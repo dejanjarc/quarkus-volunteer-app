@@ -69,7 +69,7 @@ public class VolunteerController {
                                     name = "CreatedVolunteerExample",
                                     value = """
                                             {
-                                              "id": "eb6715c1-5ab4-412f-12a0-7d17ec71aa13"
+                                              "id": "eb6715c1-5ab4-412f-12a0-7d17ec71aa13",
                                               "ztsCode": 51293,
                                               "firstName": "Janez",
                                               "lastName": "Novak",
