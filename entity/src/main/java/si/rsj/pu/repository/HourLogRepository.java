@@ -8,5 +8,11 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class HourLogRepository implements PanacheRepositoryBase<HourLog, UUID> {
+    public boolean existsByVolunteerId(UUID volunteerId) {
+        return count("volunteer.id", volunteerId) > 0;
+    }
 
+    public boolean existsByEventId(UUID eventId) {
+        return count("event.id", eventId) > 0;
+    }
 }

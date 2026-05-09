@@ -13,11 +13,13 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import si.rsj.pu.api.dto.request.CreateHourLogRequest;
+import si.rsj.pu.api.dto.request.UpdateHourLogRequest;
 import si.rsj.pu.api.dto.response.HourLogResponse;
 import si.rsj.pu.api.exception.ErrorResponse;
 import si.rsj.pu.entity.HourLog;
 import si.rsj.pu.service.HourLogService;
 import si.rsj.pu.service.command.CreateHourLogCommand;
+import si.rsj.pu.service.command.UpdateHourLogCommand;
 
 import java.net.URI;
 import java.util.UUID;
@@ -154,6 +156,92 @@ public class HourLogController {
     })
     public HourLogResponse getHourLog(@PathParam("id") UUID id) {
         return toResponse(hourLogService.getHourLog(id));
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Operation(
+        summary = "Update an hour log",
+        description = "Update an hour log by ID"
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Hour log updated successfully",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = HourLogResponse.class),
+                            example =
+                                """
+                                {
+                                  "id": "d79bF777-bF2f-584B-dCAc-E5FC26cfdEeb",
+                                  "volunteerId": "B804DAee-D8b1-8b2c-6BF7-e5Fbe4FEA67C",
+                                  "eventId": "eeB67A62-4De9-D69b-b1DC-17D11D6d9a98",
+                                  "eventRole": "STARESINA",
+                                  "workDate": "2026-07-14T10:00:00+02:00",
+                                  "hoursWorked": 8,
+                                  "description": "Opravljeno delo starešine na akciji za 14.7.2026.",
+                                  "submittedAt": "2026-07-14T23:20:55+02:00"
+                                }
+                                """
+                    )
+            ),
+            @APIResponse(responseCode = "400", description = "Invalid request payload"),
+            @APIResponse(responseCode = "401", description = "Authentication required"),
+            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "404", description = "Hour log, volunteer, or event not found"),
+            @APIResponse(responseCode = "409", description = "Conflict while updating hour log"),
+            @APIResponse(responseCode = "500", description = "Internal server error"),
+            @APIResponse(responseCode = "503", description = "Service unavailable")
+    })
+    public HourLogResponse updateHourLog(@PathParam("id") UUID id, @Valid UpdateHourLogRequest request) {
+        HourLog updated = hourLogService.updateHourLog(
+                id,
+                new UpdateHourLogCommand(
+                        request.volunteerId(),
+                        request.eventId(),
+                        request.eventRole(),
+                        request.workDate(),
+                        request.hoursWorked(),
+                        request.description()
+                )
+        );
+
+        return toResponse(updated);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Operation(
+            summary = "Delete an hour log",
+            description = "Deletes an hour log by ID."
+    )
+    @APIResponses({
+            @APIResponse(responseCode = "204", description = "HourLog deleted successfully"),
+            @APIResponse(responseCode = "400", description = "Invalid hour log ID"),
+            @APIResponse(responseCode = "401", description = "Authentication required"),
+            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "HourLog not found",
+                    content = @Content(
+                        mediaType = MediaType.APPLICATION_JSON,
+                        schema = @Schema(implementation = ErrorResponse.class),
+                            example =
+                                """
+                                {
+                                  "error": "Not Found",
+                                  "message": "HourLog not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                }
+                                """
+                    )
+            ),
+            @APIResponse(responseCode = "500", description = "Internal server error"),
+            @APIResponse(responseCode = "503", description = "Service unavailable")
+    })
+    public Response deleteHourLog(@PathParam("id") UUID id) {
+        hourLogService.deleteHourLog(id);
+        return Response.noContent().build();
     }
 
     private HourLogResponse toResponse(HourLog hourLog) {

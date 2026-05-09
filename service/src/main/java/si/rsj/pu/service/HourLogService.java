@@ -10,6 +10,7 @@ import si.rsj.pu.repository.EventRepository;
 import si.rsj.pu.repository.HourLogRepository;
 import si.rsj.pu.repository.VolunteerRepository;
 import si.rsj.pu.service.command.CreateHourLogCommand;
+import si.rsj.pu.service.command.UpdateHourLogCommand;
 import si.rsj.pu.service.exception.hourlog.HourLogNotFoundException;
 import si.rsj.pu.service.exception.common.ValidationException;
 import si.rsj.pu.service.exception.event.EventNotFoundException;
@@ -63,5 +64,61 @@ public class HourLogService {
 
         hourLogRepository.persist(hourLog);
         return hourLog;
+    }
+
+    @Transactional
+    public HourLog updateHourLog(UUID id, UpdateHourLogCommand command) {
+        HourLog hourLog = hourLogRepository.findByIdOptional(id)
+                .orElseThrow(() -> new HourLogNotFoundException(id));
+
+        Volunteer currentVolunteer = hourLog.volunteer;
+        Event currentEvent = hourLog.event;
+
+        if (command.volunteerId() != null) {
+            currentVolunteer = volunteerRepository.findByIdOptional(command.volunteerId())
+                    .orElseThrow(() -> new VolunteerNotFoundException(command.volunteerId()));
+        }
+
+        if (command.eventId() != null) {
+            currentEvent = eventRepository.findByIdOptional(command.eventId())
+                    .orElseThrow(() -> new EventNotFoundException(command.eventId()));
+        }
+
+        OffsetDateTime effectiveWorkDate = command.workDate() != null ? command.workDate() : hourLog.workDate;
+
+        if (effectiveWorkDate.isBefore(currentEvent.startDate) || effectiveWorkDate.isAfter(currentEvent.endDate)) {
+            throw new ValidationException("workDate must be within the event time range");
+        }
+
+        if (command.hoursWorked() != null && command.hoursWorked() <= 0) {
+            throw new ValidationException("hoursWorked must be greater than 0");
+        }
+
+        hourLog.volunteer = currentVolunteer;
+        hourLog.event = currentEvent;
+
+        if (command.eventRole() != null) {
+            hourLog.eventRole = command.eventRole();
+        }
+
+        hourLog.workDate = effectiveWorkDate;
+
+        if (command.hoursWorked() != null) {
+            hourLog.hoursWorked = command.hoursWorked();
+        }
+
+        if (command.description() != null) {
+            hourLog.description = command.description();
+        }
+
+        return hourLog;
+    }
+
+    @Transactional
+    public void deleteHourLog(UUID id) {
+        HourLog hourLog = hourLogRepository.findByIdOptional(id)
+                .orElseThrow(() -> new HourLogNotFoundException(id));
+
+        hourLogRepository.delete(hourLog);
     }
 }
