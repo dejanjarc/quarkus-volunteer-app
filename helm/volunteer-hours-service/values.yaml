@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: volunteer-hours-service
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+app:
+  profile: prod
+
+database:
+  host: "host.docker.internal"
+  port: 55432
+  name: "volunteer_hours"
+  existingSecret: "volunteer-hours-db"
+  usernameKey: "QUARKUS_DATASOURCE_USERNAME"
+  passwordKey: "QUARKUS_DATASOURCE_PASSWORD"
+
+
+resources: {}
+
+nameOverride: ""
+fullnameOverride: ""

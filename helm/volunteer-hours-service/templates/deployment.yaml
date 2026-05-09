@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "volunteer-hours-service.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "volunteer-hours-service.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "volunteer-hours-service.fullname" . }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: QUARKUS_PROFILE
+              value: {{ .Values.app.profile | quote }}
+            - name: QUARKUS_DATASOURCE_DB_KIND
+              value: "postgresql"
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: "jdbc:postgresql://{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }}"
+            - name: QUARKUS_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.existingSecret }}
+                  key: {{ .Values.database.usernameKey }}
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.existingSecret }}
+                  key: {{ .Values.database.passwordKey }}
+            - name: QUARKUS_HIBERNATE_ORM_SCHEMA_MANAGEMENT_STRATEGY
+              value: "validate"
+            - name: QUARKUS_LIQUIBASE_MIGRATE_AT_START
+              value: "true"
+            - name: QUARKUS_LIQUIBASE_CHANGE_LOG
+              value: "db/changelog/db.changelog-master.yaml"
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
