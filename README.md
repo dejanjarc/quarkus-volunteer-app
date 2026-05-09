@@ -6,5 +6,6 @@ docker run --name volunteer-hours-postgres \
     -e POSTGRES_PASSWORD=postgres \
     -e POSTGRES_DB=volunteer_hours \
     -p 55432:5432 \
+    --restart unless-stopped \
     -d postgres:latest
 ```
