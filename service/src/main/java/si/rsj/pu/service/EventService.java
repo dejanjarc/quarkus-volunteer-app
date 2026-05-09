@@ -5,10 +5,13 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import si.rsj.pu.entity.Event;
 import si.rsj.pu.repository.EventRepository;
+import si.rsj.pu.repository.HourLogRepository;
 import si.rsj.pu.service.command.CreateEventCommand;
 import si.rsj.pu.service.command.UpdateEventCommand;
 import si.rsj.pu.service.exception.event.EventNotFoundException;
 import si.rsj.pu.service.exception.common.ValidationException;
+import si.rsj.pu.service.exception.common.ConflictException;
+
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -18,6 +21,9 @@ public class EventService {
 
     @Inject
     EventRepository eventRepository;
+
+    @Inject
+    HourLogRepository hourLogRepository;
 
     @Transactional
     public Event createEvent(CreateEventCommand command) {
@@ -66,6 +72,18 @@ public class EventService {
         event.endDate = newEndDate;
 
         return event;
+    }
+
+    @Transactional
+    public void deleteEvent(UUID id) {
+        Event event = eventRepository.findByIdOptional(id)
+                .orElseThrow(() -> new EventNotFoundException(id));
+
+        if (hourLogRepository.existsByEventId(id)) {
+            throw new ConflictException("Event cannot be deleted because hour logs reference it");
+        }
+
+        eventRepository.delete(event);
     }
 
     public Event getEvent(UUID id) {
