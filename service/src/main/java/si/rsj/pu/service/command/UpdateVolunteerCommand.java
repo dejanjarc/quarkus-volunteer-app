@@ -1,14 +1,16 @@
 package si.rsj.pu.service.command;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Positive;
 import si.rsj.pu.entity.enums.VolunteerRole;
 
 public record UpdateVolunteerCommand(
-        Integer ztsCode,
+        @Positive Integer ztsCode,
         String firstName,
         String lastName,
         VolunteerRole volunteerRole,
         String phoneNumber,
-        String email,
+        @Email String email,
         Boolean active
 ) {
 }

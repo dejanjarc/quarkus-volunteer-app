@@ -79,12 +79,36 @@ public class HourLogController {
                             )
                     )
             ),
-            @APIResponse(responseCode = "400", description = "Invalid request payload"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
-            @APIResponse(responseCode = "409", description = "Conflict with existing resource"),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "400", description = "Invalid request payload",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "409", description = "Conflict with existing resource",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
 
     })
     public Response createHourLog(@Valid CreateHourLogRequest request) {
@@ -135,8 +159,16 @@ public class HourLogController {
                             )
                     )
             ),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
             @APIResponse(
                     responseCode = "404",
                     description = "Hour log not found",
@@ -151,18 +183,26 @@ public class HourLogController {
                                     """
                     )
             ),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
     })
     public HourLogResponse getHourLog(@PathParam("id") UUID id) {
         return toResponse(hourLogService.getHourLog(id));
     }
 
-    @PUT
+    @PATCH
     @Path("/{id}")
     @Operation(
         summary = "Update an hour log",
-        description = "Update an hour log by ID"
+        description = "Update an hour log by ID for selected fields (PATCH)"
     )
     @APIResponses({
             @APIResponse(
@@ -186,13 +226,36 @@ public class HourLogController {
                                 """
                     )
             ),
-            @APIResponse(responseCode = "400", description = "Invalid request payload"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
-            @APIResponse(responseCode = "404", description = "Hour log, volunteer, or event not found"),
-            @APIResponse(responseCode = "409", description = "Conflict while updating hour log"),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "400", description = "Invalid request payload",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "404", description = "Hour log, volunteer, or event not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
     })
     public HourLogResponse updateHourLog(@PathParam("id") UUID id, @Valid UpdateHourLogRequest request) {
         HourLog updated = hourLogService.updateHourLog(
@@ -217,10 +280,26 @@ public class HourLogController {
             description = "Deletes an hour log by ID."
     )
     @APIResponses({
-            @APIResponse(responseCode = "204", description = "HourLog deleted successfully"),
-            @APIResponse(responseCode = "400", description = "Invalid hour log ID"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "204", description = "HourLog deleted successfully",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "400", description = "Invalid hour log ID",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
             @APIResponse(
                     responseCode = "404",
                     description = "HourLog not found",
@@ -236,8 +315,16 @@ public class HourLogController {
                                 """
                     )
             ),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
     })
     public Response deleteHourLog(@PathParam("id") UUID id) {
         hourLogService.deleteHourLog(id);

@@ -82,12 +82,36 @@ public class VolunteerController {
                             )
                     )
             ),
-            @APIResponse(responseCode = "400", description = "Invalid request payload"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
-            @APIResponse(responseCode = "409", description = "Conflict with existing resource"),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "400", description = "Invalid request payload",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "409", description = "Conflict with existing resource",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
 
     })
     public Response createVolunteer(@Valid CreateVolunteerRequest request) {
@@ -139,8 +163,16 @@ public class VolunteerController {
                             )
                     )
             ),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
             @APIResponse(
                     responseCode = "404",
                     description = "Volunteer not found",
@@ -156,8 +188,16 @@ public class VolunteerController {
                                     """
                     )
             ),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
     })
     public VolunteerResponse getVolunteer(@PathParam("id") UUID id) {
         return toResponse(volunteerService.getVolunteer(id));
@@ -170,10 +210,26 @@ public class VolunteerController {
             description = "Deletes a volunteer by ID."
     )
     @APIResponses({
-            @APIResponse(responseCode = "204", description = "Volunteer deleted successfully"),
-            @APIResponse(responseCode = "400", description = "Invalid volunteer ID"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "204", description = "Volunteer deleted successfully",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "400", description = "Invalid volunteer ID",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
             @APIResponse(
                     responseCode = "404",
                     description = "Volunteer not found",
@@ -191,15 +247,27 @@ public class VolunteerController {
             ),
             @APIResponse(
                     responseCode = "409",
-                    description = "Volunteer cannot be deleted because it is referenced"
+                    description = "Volunteer cannot be deleted because it is referenced",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             ),
             @APIResponse(
                     responseCode = "500",
-                    description = "Internal server error"
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             ),
             @APIResponse(
                     responseCode = "503",
-                    description = "Service unavailable"
+                    description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
     public Response deleteVolunteer(@PathParam("id") UUID id) {
@@ -221,11 +289,11 @@ public class VolunteerController {
         );
     }
 
-    @PUT
+    @PATCH
     @Path("/{id}")
     @Operation(
             summary = "Update a Volunteer",
-            description = "Update a Volunteer by ID"
+            description = "Update a Volunteer by ID for selected fields (PATCH)"
     )
     @APIResponses({
             @APIResponse(
@@ -251,9 +319,21 @@ public class VolunteerController {
                             )
                     )
             ),
-            @APIResponse(responseCode = "400", description = "Invalid request payload"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "400", description = "Invalid request payload",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
             @APIResponse(
                     responseCode = "404",
                     description = "Volunteer not found",
@@ -269,9 +349,16 @@ public class VolunteerController {
                                     """
                     )
             ),
-            @APIResponse(responseCode = "409", description = "Volunteer already exists with the provided ztsCode or email"),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
     })
     public VolunteerResponse updateVolunteer(@PathParam("id") UUID id, @Valid UpdateVolunteerRequest request) {
         Volunteer updated = volunteerService.updateVolunteer(

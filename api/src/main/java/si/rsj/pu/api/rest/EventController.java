@@ -77,12 +77,36 @@ public class EventController {
                             )
                     )
             ),
-            @APIResponse(responseCode = "400", description = "Invalid request payload"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
-            @APIResponse(responseCode = "409", description = "Conflict with existing resource"),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "400", description = "Invalid request payload",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "409", description = "Conflict with existing resource",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
 
     })
     public Response createEvent(@Valid CreateEventRequest request) {
@@ -132,8 +156,16 @@ public class EventController {
                             )
                     )
             ),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
             @APIResponse(
                     responseCode = "404",
                     description = "Event not found",
@@ -149,8 +181,16 @@ public class EventController {
                                     """
                     )
             ),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
     })
     public EventResponse getEvent(@PathParam("id") UUID id) {
         return toResponse(eventService.getEvent(id));
@@ -163,10 +203,26 @@ public class EventController {
             description = "Deletes an event by ID."
     )
     @APIResponses({
-            @APIResponse(responseCode = "204", description = "Event deleted successfully"),
-            @APIResponse(responseCode = "400", description = "Invalid event ID"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "204", description = "Event deleted successfully",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "400", description = "Invalid event ID",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
             @APIResponse(
                     responseCode = "404",
                     description = "Event not found",
@@ -182,9 +238,21 @@ public class EventController {
                                     """
                     )
             ),
-            @APIResponse(responseCode = "409", description = "Event cannot be deleted because it is referenced"),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "409", description = "Event cannot be deleted because it is referenced",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
     })
     public Response deleteEvent(@PathParam("id") UUID id) {
         eventService.deleteEvent(id);
@@ -203,11 +271,11 @@ public class EventController {
         );
     }
 
-    @PUT
+    @PATCH
     @Path("/{id}")
     @Operation(
             summary = "Update an event",
-            description = "Update an event by ID"
+            description = "Update an event by ID for selected fields (PATCH)"
     )
     @APIResponses({
             @APIResponse(
@@ -232,9 +300,21 @@ public class EventController {
                             )
                     )
             ),
-            @APIResponse(responseCode = "400", description = "Invalid request payload"),
-            @APIResponse(responseCode = "401", description = "Authentication required"),
-            @APIResponse(responseCode = "403", description = "Forbidden"),
+            @APIResponse(responseCode = "400", description = "Invalid request payload",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
             @APIResponse(
                     responseCode = "404",
                     description = "Event not found",
@@ -250,9 +330,16 @@ public class EventController {
                                     """
                     )
             ),
-            @APIResponse(responseCode = "409", description = "Conflict while updating event"),
-            @APIResponse(responseCode = "500", description = "Internal server error"),
-            @APIResponse(responseCode = "503", description = "Service unavailable")
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
     })
     public EventResponse updateEvent(@PathParam("id") UUID id, @Valid UpdateEventRequest request) {
         Event updated = eventService.updateEvent(
