@@ -192,8 +192,16 @@ public class EventController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-    public EventResponse getEvent(@PathParam("id") UUID id) {
-        return toResponse(eventService.getEvent(id));
+    public EventResponse getEvent(@PathParam("id") String id) {
+        return toResponse(eventService.getEvent(parseUuid(id)));
+    }
+
+    private UUID parseUuid(String rawId) {
+        try {
+            return UUID.fromString(rawId);
+        } catch (IllegalArgumentException e) {
+            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
+        }
     }
 
     @DELETE

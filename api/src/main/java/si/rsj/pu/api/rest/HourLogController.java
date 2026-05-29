@@ -194,8 +194,16 @@ public class HourLogController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-    public HourLogResponse getHourLog(@PathParam("id") UUID id) {
-        return toResponse(hourLogService.getHourLog(id));
+    public HourLogResponse getHourLog(@PathParam("id") String id) {
+        return toResponse(hourLogService.getHourLog(parseUuid(id)));
+    }
+
+    private UUID parseUuid(String rawId) {
+        try {
+            return UUID.fromString(rawId);
+        } catch (IllegalArgumentException e) {
+            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
+        }
     }
 
     @PATCH

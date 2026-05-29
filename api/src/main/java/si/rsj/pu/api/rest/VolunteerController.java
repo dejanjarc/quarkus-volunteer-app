@@ -199,8 +199,16 @@ public class VolunteerController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-    public VolunteerResponse getVolunteer(@PathParam("id") UUID id) {
-        return toResponse(volunteerService.getVolunteer(id));
+    public VolunteerResponse getVolunteer(@PathParam("id") String id) {
+        return toResponse(volunteerService.getVolunteer(parseUuid(id)));
+    }
+
+    private UUID parseUuid(String rawId) {
+        try {
+            return UUID.fromString(rawId);
+        } catch (IllegalArgumentException e) {
+            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
+        }
     }
 
     @DELETE
