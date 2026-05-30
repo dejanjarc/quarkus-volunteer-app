@@ -27,10 +27,6 @@ public class EventService {
 
     @Transactional
     public Event createEvent(CreateEventCommand command) {
-        if (command.endDate().isBefore(command.startDate())) {
-            throw new ValidationException("endDate must not be before startDate");
-        }
-
         Event event = new Event();
         event.id = UUID.randomUUID();
         event.name = command.name();
@@ -49,7 +45,10 @@ public class EventService {
         Event event = eventRepository.findByIdOptional(id)
                 .orElseThrow(() -> new EventNotFoundException(id));
 
-        if (command.name() != null && !command.name().isBlank()) {
+        if (command.name() != null) {
+            if (command.name().isBlank()) {
+                throw new ValidationException("name must not be blank");
+            }
             event.name = command.name();
         }
 
