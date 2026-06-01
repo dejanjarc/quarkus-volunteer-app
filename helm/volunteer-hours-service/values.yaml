@@ -13,8 +13,8 @@ app:
   profile: prod
 
 database:
-  host: "host.docker.internal"
-  port: 55432
+  host: "volunteer-hours-postgres"
+  port: 5432
   name: "volunteer_hours"
   existingSecret: "volunteer-hours-db"
   usernameKey: "QUARKUS_DATASOURCE_USERNAME"
