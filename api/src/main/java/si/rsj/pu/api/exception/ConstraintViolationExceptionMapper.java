@@ -4,14 +4,12 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jboss.logging.Logger;
 
 @Provider
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
-    private static final Logger logger = LogManager.getLogger(ConstraintViolationExceptionMapper.class);
-
+    private static final Logger logger = Logger.getLogger(ConstraintViolationExceptionMapper.class);
     @Override
     public Response toResponse(ConstraintViolationException exception) {
         logger.warn("Constraint violation", exception);
