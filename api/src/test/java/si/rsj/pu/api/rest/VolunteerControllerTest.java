@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
-class VolunteerControllerTest {
+class VolunteerControllerTest extends BaseApiTest {
 
     @Test
     void shouldCreateGetAndPatchVolunteer() {
