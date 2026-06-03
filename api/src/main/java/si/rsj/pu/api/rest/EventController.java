@@ -34,6 +34,83 @@ public class EventController {
     @Inject
     EventService eventService;
 
+    @GET
+    @Path("/{id}")
+    @Operation(
+            summary = "Get an event",
+            description = "Gets an event by ID"
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Event found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventResponse.class),
+                            examples = @ExampleObject(
+                                    name = "GetEventExample",
+                                    value = """
+                                            {
+                                                "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+                                                "name": "Tabor 2026",
+                                                "description": "Poletni tabor 2026 pri Podgozdu",
+                                                "location": "Podgozd",
+                                                "startDate": "2026-07-03T10:00:00+02:00",
+                                                "endDate": "2026-07-12T10:00:00+02:00",
+                                                "createdAt": "2026-05-23T17:15:36+02:00"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            example =
+                                    """
+                                    {
+                                      "error": "Not Found",
+                                      "message": "Event not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                    }
+                                    """
+                    )
+            ),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
+    })
+    public EventResponse getEvent(@PathParam("id") String id) {
+        return eventMapper.toResponse(eventService.getEvent(parseUuid(id)));
+    }
+
+    private UUID parseUuid(String rawId) {
+        try {
+            return UUID.fromString(rawId);
+        } catch (IllegalArgumentException e) {
+            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
+        }
+    }
+
     @POST
     @Operation(
             summary = "Create an event",
@@ -123,146 +200,6 @@ public class EventController {
                 .build();
     }
 
-    @GET
-    @Path("/{id}")
-    @Operation(
-            summary = "Get an event",
-            description = "Gets an event by ID"
-    )
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "200",
-                    description = "Event found",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = EventResponse.class),
-                            examples = @ExampleObject(
-                                    name = "GetEventExample",
-                                    value = """
-                                            {
-                                                "id": "d290f1ee-6c54-4b01-90e6-d701748f0851",
-                                                "name": "Tabor 2026",
-                                                "description": "Poletni tabor 2026 pri Podgozdu",
-                                                "location": "Podgozd",
-                                                "startDate": "2026-07-03T10:00:00+02:00",
-                                                "endDate": "2026-07-12T10:00:00+02:00",
-                                                "createdAt": "2026-05-23T17:15:36+02:00"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @APIResponse(responseCode = "401", description = "Authentication required",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(
-                    responseCode = "404",
-                    description = "Event not found",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            example =
-                                    """
-                                    {
-                                      "error": "Not Found",
-                                      "message": "Event not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
-                                    }
-                                    """
-                    )
-            ),
-            @APIResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "503", description = "Service unavailable",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    ))
-    })
-    public EventResponse getEvent(@PathParam("id") String id) {
-        return eventMapper.toResponse(eventService.getEvent(parseUuid(id)));
-    }
-
-    private UUID parseUuid(String rawId) {
-        try {
-            return UUID.fromString(rawId);
-        } catch (IllegalArgumentException e) {
-            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
-        }
-    }
-
-    @DELETE
-    @Path("/{id}")
-    @Operation(
-            summary = "Delete an event",
-            description = "Deletes an event by ID."
-    )
-    @APIResponses({
-            @APIResponse(responseCode = "204", description = "Event deleted successfully",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "400", description = "Invalid event ID",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "401", description = "Authentication required",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(
-                    responseCode = "404",
-                    description = "Event not found",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            example =
-                                    """
-                                    {
-                                      "error": "Not Found",
-                                      "message": "Event not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
-                                    }
-                                    """
-                    )
-            ),
-            @APIResponse(responseCode = "409", description = "Event cannot be deleted because it is referenced",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "503", description = "Service unavailable",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    ))
-    })
-    public Response deleteEvent(@PathParam("id") String id) {
-        eventService.deleteEvent(parseUuid(id));
-        return Response.noContent().build();
-    }
-
     @PATCH
     @Path("/{id}")
     @Operation(
@@ -341,4 +278,68 @@ public class EventController {
 
         return eventMapper.toResponse(updated);
     }
+
+    @DELETE
+    @Path("/{id}")
+    @Operation(
+            summary = "Delete an event",
+            description = "Deletes an event by ID."
+    )
+    @APIResponses({
+            @APIResponse(responseCode = "204", description = "Event deleted successfully",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "400", description = "Invalid event ID",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Event not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            example =
+                                    """
+                                    {
+                                      "error": "Not Found",
+                                      "message": "Event not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                    }
+                                    """
+                    )
+            ),
+            @APIResponse(responseCode = "409", description = "Event cannot be deleted because it is referenced",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
+    })
+    public Response deleteEvent(@PathParam("id") String id) {
+        eventService.deleteEvent(parseUuid(id));
+        return Response.noContent().build();
+    }
+
 }

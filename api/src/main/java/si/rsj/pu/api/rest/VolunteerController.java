@@ -34,6 +34,84 @@ public class VolunteerController {
     @Inject
     VolunteerService volunteerService;
 
+    @GET
+    @Path("/{id}")
+    @Operation(
+            summary = "Get a volunteer",
+            description = "Gets a volunteer by ID"
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "Volunteer found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = VolunteerResponse.class),
+                            examples = @ExampleObject(
+                                    name = "GetVolunteerExample",
+                                    value = """
+                                        { "id": "eb6715c1-5ab4-412f-12a0-7d17ec71aa13",
+                                          "ztsCode": 51293,
+                                          "firstName": "Janez",
+                                          "lastName": "Novak",
+                                          "volunteerRole": "STARESINA",
+                                          "phoneNumber": "+386 40 123 456",
+                                          "email": "janez.novak@gmail.com",
+                                          "active": true,
+                                          "joinedAt": "2026-05-01T16:35:30+02:00"
+                                        }
+                                        """
+                            )
+                    )
+            ),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Volunteer not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            example =
+                                    """
+                                    {
+                                      "error": "Not Found",
+                                      "message": "Volunteer not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                    }
+                                    """
+                    )
+            ),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
+    })
+    public VolunteerResponse getVolunteer(@PathParam("id") String id) {
+        return volunteerMapper.toResponse(volunteerService.getVolunteer(parseUuid(id)));
+    }
+
+    private UUID parseUuid(String rawId) {
+        try {
+            return UUID.fromString(rawId);
+        } catch (IllegalArgumentException e) {
+            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
+        }
+    }
+
     @POST
     @Operation(
             summary = "Create a volunteer",
@@ -128,156 +206,6 @@ public class VolunteerController {
                 .build();
     }
 
-    @GET
-    @Path("/{id}")
-    @Operation(
-            summary = "Get a volunteer",
-            description = "Gets a volunteer by ID"
-    )
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "200",
-                    description = "Volunteer found",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = VolunteerResponse.class),
-                            examples = @ExampleObject(
-                                name = "GetVolunteerExample",
-                                value = """
-                                        { "id": "eb6715c1-5ab4-412f-12a0-7d17ec71aa13",
-                                          "ztsCode": 51293,
-                                          "firstName": "Janez",
-                                          "lastName": "Novak",
-                                          "volunteerRole": "STARESINA",
-                                          "phoneNumber": "+386 40 123 456",
-                                          "email": "janez.novak@gmail.com",
-                                          "active": true,
-                                          "joinedAt": "2026-05-01T16:35:30+02:00"
-                                        }
-                                        """
-                            )
-                    )
-            ),
-            @APIResponse(responseCode = "401", description = "Authentication required",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(
-                    responseCode = "404",
-                    description = "Volunteer not found",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            example =
-                                    """
-                                    {
-                                      "error": "Not Found",
-                                      "message": "Volunteer not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
-                                    }
-                                    """
-                    )
-            ),
-            @APIResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "503", description = "Service unavailable",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    ))
-    })
-    public VolunteerResponse getVolunteer(@PathParam("id") String id) {
-        return volunteerMapper.toResponse(volunteerService.getVolunteer(parseUuid(id)));
-    }
-
-    private UUID parseUuid(String rawId) {
-        try {
-            return UUID.fromString(rawId);
-        } catch (IllegalArgumentException e) {
-            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
-        }
-    }
-
-    @DELETE
-    @Path("/{id}")
-    @Operation(
-            summary = "Delete a volunteer",
-            description = "Deletes a volunteer by ID."
-    )
-    @APIResponses({
-            @APIResponse(responseCode = "204", description = "Volunteer deleted successfully",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "400", description = "Invalid volunteer ID",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "401", description = "Authentication required",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(
-                    responseCode = "404",
-                    description = "Volunteer not found",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            example =
-                                """
-                                {
-                                  "error": "Not Found",
-                                  "message": "Volunteer not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
-                                }
-                                """
-                    )
-            ),
-            @APIResponse(
-                    responseCode = "409",
-                    description = "Volunteer cannot be deleted because it is referenced",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )
-            ),
-            @APIResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )
-            ),
-            @APIResponse(
-                    responseCode = "503",
-                    description = "Service unavailable",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )
-            )
-    })
-    public Response deleteVolunteer(@PathParam("id") String id) {
-        volunteerService.deleteVolunteer(parseUuid(id));
-        return Response.noContent().build();
-    }
-
     @PATCH
     @Path("/{id}")
     @Operation(
@@ -356,5 +284,77 @@ public class VolunteerController {
         );
 
         return volunteerMapper.toResponse(updated);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Operation(
+            summary = "Delete a volunteer",
+            description = "Deletes a volunteer by ID."
+    )
+    @APIResponses({
+            @APIResponse(responseCode = "204", description = "Volunteer deleted successfully",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "400", description = "Invalid volunteer ID",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Volunteer not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            example =
+                                """
+                                {
+                                  "error": "Not Found",
+                                  "message": "Volunteer not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                }
+                                """
+                    )
+            ),
+            @APIResponse(
+                    responseCode = "409",
+                    description = "Volunteer cannot be deleted because it is referenced",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @APIResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @APIResponse(
+                    responseCode = "503",
+                    description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
+    public Response deleteVolunteer(@PathParam("id") String id) {
+        volunteerService.deleteVolunteer(parseUuid(id));
+        return Response.noContent().build();
     }
 }

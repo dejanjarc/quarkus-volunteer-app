@@ -34,6 +34,82 @@ public class HourLogController {
     @Inject
     HourLogService hourLogService;
 
+    @GET
+    @Path("/{id}")
+    @Operation(
+            summary = "Get an hour log",
+            description = "Gets an hour log by ID"
+    )
+    @APIResponses({
+            @APIResponse(
+                    responseCode = "200",
+                    description = "HourLog found",
+                    content = @Content(
+                            schema = @Schema(implementation = HourLogResponse.class),
+                            examples = @ExampleObject(
+                                    name = "GetHourLogExample",
+                                    value = """
+                                            {
+                                              "id": "d79bF777-bF2f-584B-dCAc-E5FC26cfdEeb",
+                                              "volunteerId": "B804DAee-D8b1-8b2c-6BF7-e5Fbe4FEA67C",
+                                              "eventId": "eeB67A62-4De9-D69b-b1DC-17D11D6d9a98",
+                                              "eventRole": "STARESINA",
+                                              "workDate": "2026-07-14T10:00:00+02:00",
+                                              "hoursWorked": 8,
+                                              "description": "Opravljeno delo starešine na akciji za 14.7.2026.",
+                                              "submittedAt": "2026-07-14T23:20:55+02:00"
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @APIResponse(responseCode = "401", description = "Authentication required",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(
+                    responseCode = "404",
+                    description = "Hour log not found",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            example =
+                                    """
+                                    {
+                                      "error": "Not Found",
+                                      "message": "HourLog not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
+                                    }
+                                    """
+                    )
+            ),
+            @APIResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @APIResponse(responseCode = "503", description = "Service unavailable",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
+    })
+    public HourLogResponse getHourLog(@PathParam("id") String id) {
+        return hourLogMapper.toResponse(hourLogService.getHourLog(parseUuid(id)));
+    }
+
+    private UUID parseUuid(String rawId) {
+        try {
+            return UUID.fromString(rawId);
+        } catch (IllegalArgumentException e) {
+            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
+        }
+    }
+
     @POST
     @Operation(
             summary = "Create an hour log",
@@ -123,82 +199,6 @@ public class HourLogController {
         return Response.created(URI.create("/hourlog/" + response.id()))
                 .entity(response)
                 .build();
-    }
-
-    @GET
-    @Path("/{id}")
-    @Operation(
-            summary = "Get an hour log",
-            description = "Gets an hour log by ID"
-    )
-    @APIResponses({
-            @APIResponse(
-                    responseCode = "200",
-                    description = "HourLog found",
-                    content = @Content(
-                            schema = @Schema(implementation = HourLogResponse.class),
-                            examples = @ExampleObject(
-                                    name = "GetHourLogExample",
-                                    value = """
-                                            {
-                                              "id": "d79bF777-bF2f-584B-dCAc-E5FC26cfdEeb",
-                                              "volunteerId": "B804DAee-D8b1-8b2c-6BF7-e5Fbe4FEA67C",
-                                              "eventId": "eeB67A62-4De9-D69b-b1DC-17D11D6d9a98",
-                                              "eventRole": "STARESINA",
-                                              "workDate": "2026-07-14T10:00:00+02:00",
-                                              "hoursWorked": 8,
-                                              "description": "Opravljeno delo starešine na akciji za 14.7.2026.",
-                                              "submittedAt": "2026-07-14T23:20:55+02:00"
-                                            }
-                                            """
-                            )
-                    )
-            ),
-            @APIResponse(responseCode = "401", description = "Authentication required",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "403", description = "Forbidden",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(
-                    responseCode = "404",
-                    description = "Hour log not found",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            example =
-                                    """
-                                    {
-                                      "error": "Not Found",
-                                      "message": "HourLog not found: d290f1ee-6c54-4b01-90e6-d701748f0851"
-                                    }
-                                    """
-                    )
-            ),
-            @APIResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )),
-            @APIResponse(responseCode = "503", description = "Service unavailable",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    ))
-    })
-    public HourLogResponse getHourLog(@PathParam("id") String id) {
-        return hourLogMapper.toResponse(hourLogService.getHourLog(parseUuid(id)));
-    }
-
-    private UUID parseUuid(String rawId) {
-        try {
-            return UUID.fromString(rawId);
-        } catch (IllegalArgumentException e) {
-            throw new si.rsj.pu.service.exception.common.ValidationException("Invalid UUID");
-        }
     }
 
     @PATCH
