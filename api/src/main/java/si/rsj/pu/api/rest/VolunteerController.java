@@ -16,10 +16,9 @@ import si.rsj.pu.api.dto.request.CreateVolunteerRequest;
 import si.rsj.pu.api.dto.request.UpdateVolunteerRequest;
 import si.rsj.pu.api.dto.response.VolunteerResponse;
 import si.rsj.pu.api.exception.ErrorResponse;
+import si.rsj.pu.api.mapper.VolunteerMapper;
 import si.rsj.pu.entity.Volunteer;
 import si.rsj.pu.service.VolunteerService;
-import si.rsj.pu.service.command.CreateVolunteerCommand;
-import si.rsj.pu.service.command.UpdateVolunteerCommand;
 
 import java.net.URI;
 import java.util.UUID;
@@ -28,6 +27,9 @@ import java.util.UUID;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class VolunteerController {
+
+    @Inject
+    VolunteerMapper volunteerMapper;
 
     @Inject
     VolunteerService volunteerService;
@@ -116,17 +118,10 @@ public class VolunteerController {
     })
     public Response createVolunteer(@Valid CreateVolunteerRequest request) {
         Volunteer created = volunteerService.createVolunteer(
-                new CreateVolunteerCommand(
-                        request.ztsCode(),
-                        request.firstName(),
-                        request.lastName(),
-                        request.volunteerRole(),
-                        request.phoneNumber(),
-                        request.email()
-                )
+                volunteerMapper.toCreateCommand(request)
         );
 
-        VolunteerResponse response = toResponse(created);
+        VolunteerResponse response = volunteerMapper.toResponse(created);
 
         return Response.created(URI.create("/volunteers/" + response.id()))
                 .entity(response)
@@ -200,7 +195,7 @@ public class VolunteerController {
                     ))
     })
     public VolunteerResponse getVolunteer(@PathParam("id") String id) {
-        return toResponse(volunteerService.getVolunteer(parseUuid(id)));
+        return volunteerMapper.toResponse(volunteerService.getVolunteer(parseUuid(id)));
     }
 
     private UUID parseUuid(String rawId) {
@@ -278,23 +273,9 @@ public class VolunteerController {
                     )
             )
     })
-    public Response deleteVolunteer(@PathParam("id") UUID id) {
-        volunteerService.deleteVolunteer(id);
+    public Response deleteVolunteer(@PathParam("id") String id) {
+        volunteerService.deleteVolunteer(parseUuid(id));
         return Response.noContent().build();
-    }
-
-    private VolunteerResponse toResponse(Volunteer volunteer) {
-        return new VolunteerResponse(
-                volunteer.id,
-                volunteer.ztsCode,
-                volunteer.firstName,
-                volunteer.lastName,
-                volunteer.volunteerRole,
-                volunteer.phoneNumber,
-                volunteer.email,
-                volunteer.active,
-                volunteer.joinedAt
-        );
     }
 
     @PATCH
@@ -368,20 +349,12 @@ public class VolunteerController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-    public VolunteerResponse updateVolunteer(@PathParam("id") UUID id, @Valid UpdateVolunteerRequest request) {
+    public VolunteerResponse updateVolunteer(@PathParam("id") String id, @Valid UpdateVolunteerRequest request) {
         Volunteer updated = volunteerService.updateVolunteer(
-                id,
-                new UpdateVolunteerCommand(
-                        request.ztsCode(),
-                        request.firstName(),
-                        request.lastName(),
-                        request.volunteerRole(),
-                        request.phoneNumber(),
-                        request.email(),
-                        request.active()
-                )
+                parseUuid(id),
+                volunteerMapper.toUpdateCommand(request)
         );
 
-        return toResponse(updated);
+        return volunteerMapper.toResponse(updated);
     }
 }

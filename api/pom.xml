@@ -12,6 +12,10 @@
     <artifactId>api</artifactId>
     <packaging>quarkus</packaging>
 
+    <properties>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>si.rsj.pu</groupId>
@@ -71,6 +75,12 @@
             <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -86,6 +96,13 @@
                 <version>${compiler-plugin.version}</version>
                 <configuration>
                     <parameters>true</parameters>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>

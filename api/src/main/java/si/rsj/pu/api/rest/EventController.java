@@ -16,10 +16,9 @@ import si.rsj.pu.api.dto.request.CreateEventRequest;
 import si.rsj.pu.api.dto.request.UpdateEventRequest;
 import si.rsj.pu.api.dto.response.EventResponse;
 import si.rsj.pu.api.exception.ErrorResponse;
+import si.rsj.pu.api.mapper.EventMapper;
 import si.rsj.pu.entity.Event;
 import si.rsj.pu.service.EventService;
-import si.rsj.pu.service.command.CreateEventCommand;
-import si.rsj.pu.service.command.UpdateEventCommand;
 
 import java.net.URI;
 import java.util.UUID;
@@ -28,6 +27,9 @@ import java.util.UUID;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class EventController {
+
+    @Inject
+    EventMapper eventMapper;
 
     @Inject
     EventService eventService;
@@ -111,16 +113,10 @@ public class EventController {
     })
     public Response createEvent(@Valid CreateEventRequest request) {
         Event created = eventService.createEvent(
-                new CreateEventCommand(
-                        request.name(),
-                        request.description(),
-                        request.location(),
-                        request.startDate(),
-                        request.endDate()
-                )
+                eventMapper.toCreateCommand(request)
         );
 
-        EventResponse response = toResponse(created);
+        EventResponse response = eventMapper.toResponse(created);
 
         return Response.created(URI.create("/events/" + response.id()))
                 .entity(response)
@@ -193,7 +189,7 @@ public class EventController {
                     ))
     })
     public EventResponse getEvent(@PathParam("id") String id) {
-        return toResponse(eventService.getEvent(parseUuid(id)));
+        return eventMapper.toResponse(eventService.getEvent(parseUuid(id)));
     }
 
     private UUID parseUuid(String rawId) {
@@ -262,21 +258,9 @@ public class EventController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-    public Response deleteEvent(@PathParam("id") UUID id) {
-        eventService.deleteEvent(id);
+    public Response deleteEvent(@PathParam("id") String id) {
+        eventService.deleteEvent(parseUuid(id));
         return Response.noContent().build();
-    }
-
-    private EventResponse toResponse(Event event) {
-        return new EventResponse(
-                event.id,
-                event.name,
-                event.description,
-                event.location,
-                event.startDate,
-                event.endDate,
-                event.createdAt
-        );
     }
 
     @PATCH
@@ -349,18 +333,12 @@ public class EventController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-    public EventResponse updateEvent(@PathParam("id") UUID id, @Valid UpdateEventRequest request) {
+    public EventResponse updateEvent(@PathParam("id") String id, @Valid UpdateEventRequest request) {
         Event updated = eventService.updateEvent(
-                id,
-                new UpdateEventCommand(
-                        request.name(),
-                        request.description(),
-                        request.location(),
-                        request.startDate(),
-                        request.endDate()
-                )
+                parseUuid(id),
+                eventMapper.toUpdateCommand(request)
         );
 
-        return toResponse(updated);
+        return eventMapper.toResponse(updated);
     }
 }

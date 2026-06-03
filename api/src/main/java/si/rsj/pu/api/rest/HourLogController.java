@@ -16,10 +16,9 @@ import si.rsj.pu.api.dto.request.CreateHourLogRequest;
 import si.rsj.pu.api.dto.request.UpdateHourLogRequest;
 import si.rsj.pu.api.dto.response.HourLogResponse;
 import si.rsj.pu.api.exception.ErrorResponse;
+import si.rsj.pu.api.mapper.HourLogMapper;
 import si.rsj.pu.entity.HourLog;
 import si.rsj.pu.service.HourLogService;
-import si.rsj.pu.service.command.CreateHourLogCommand;
-import si.rsj.pu.service.command.UpdateHourLogCommand;
 
 import java.net.URI;
 import java.util.UUID;
@@ -28,6 +27,9 @@ import java.util.UUID;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class HourLogController {
+
+    @Inject
+    HourLogMapper hourLogMapper;
 
     @Inject
     HourLogService hourLogService;
@@ -113,17 +115,10 @@ public class HourLogController {
     })
     public Response createHourLog(@Valid CreateHourLogRequest request) {
         HourLog created = hourLogService.createHourLog(
-                new CreateHourLogCommand(
-                        request.volunteerId(),
-                        request.eventId(),
-                        request.eventRole(),
-                        request.workDate(),
-                        request.hoursWorked(),
-                        request.description()
-                )
+                hourLogMapper.toCreateCommand(request)
         );
 
-        HourLogResponse response = toResponse(created);
+        HourLogResponse response = hourLogMapper.toResponse(created);
 
         return Response.created(URI.create("/hourlog/" + response.id()))
                 .entity(response)
@@ -195,7 +190,7 @@ public class HourLogController {
                     ))
     })
     public HourLogResponse getHourLog(@PathParam("id") String id) {
-        return toResponse(hourLogService.getHourLog(parseUuid(id)));
+        return hourLogMapper.toResponse(hourLogService.getHourLog(parseUuid(id)));
     }
 
     private UUID parseUuid(String rawId) {
@@ -265,20 +260,13 @@ public class HourLogController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-    public HourLogResponse updateHourLog(@PathParam("id") UUID id, @Valid UpdateHourLogRequest request) {
+    public HourLogResponse updateHourLog(@PathParam("id") String id, @Valid UpdateHourLogRequest request) {
         HourLog updated = hourLogService.updateHourLog(
-                id,
-                new UpdateHourLogCommand(
-                        request.volunteerId(),
-                        request.eventId(),
-                        request.eventRole(),
-                        request.workDate(),
-                        request.hoursWorked(),
-                        request.description()
-                )
+                parseUuid(id),
+                hourLogMapper.toUpdateCommand(request)
         );
 
-        return toResponse(updated);
+        return hourLogMapper.toResponse(updated);
     }
 
     @DELETE
@@ -334,21 +322,8 @@ public class HourLogController {
                             schema = @Schema(implementation = ErrorResponse.class)
                     ))
     })
-    public Response deleteHourLog(@PathParam("id") UUID id) {
-        hourLogService.deleteHourLog(id);
+    public Response deleteHourLog(@PathParam("id") String id) {
+        hourLogService.deleteHourLog(parseUuid(id));
         return Response.noContent().build();
-    }
-
-    private HourLogResponse toResponse(HourLog hourLog) {
-        return new HourLogResponse(
-                hourLog.id,
-                hourLog.volunteer.id,
-                hourLog.event.id,
-                hourLog.eventRole,
-                hourLog.workDate,
-                hourLog.hoursWorked,
-                hourLog.description,
-                hourLog.submittedAt
-        );
     }
 }
