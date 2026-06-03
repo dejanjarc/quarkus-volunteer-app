@@ -1,124 +1,46 @@
 package si.rsj.pu.service;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import si.rsj.pu.entity.Event;
 import si.rsj.pu.entity.HourLog;
-import si.rsj.pu.entity.Volunteer;
-import si.rsj.pu.repository.EventRepository;
-import si.rsj.pu.repository.HourLogRepository;
-import si.rsj.pu.repository.VolunteerRepository;
 import si.rsj.pu.service.command.CreateHourLogCommand;
 import si.rsj.pu.service.command.UpdateHourLogCommand;
-import si.rsj.pu.service.exception.hourlog.HourLogNotFoundException;
-import si.rsj.pu.service.exception.common.ValidationException;
-import si.rsj.pu.service.exception.event.EventNotFoundException;
-import si.rsj.pu.service.exception.volunteer.VolunteerNotFoundException;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@ApplicationScoped
-public class HourLogService {
+/**
+ * Service contract for managing hour logs.
+ */
+public interface HourLogService {
 
-    @Inject
-    HourLogRepository hourLogRepository;
+    /**
+     * Returns an hour log by ID.
+     *
+     * @param id hour log ID
+     * @return hour log entity
+     */
+    HourLog getHourLog(UUID id);
 
-    @Inject
-    VolunteerRepository volunteerRepository;
+    /**
+     * Creates a new hour log.
+     *
+     * @param command create hour log data
+     * @return created hour log entity
+     */
+    HourLog createHourLog(CreateHourLogCommand command);
 
-    @Inject
-    EventRepository eventRepository;
+    /**
+     * Updates selected hour log fields.
+     *
+     * @param id hour log ID
+     * @param command update data
+     * @return updated hour log entity
+     */
+    HourLog updateHourLog(UUID id, UpdateHourLogCommand command);
 
-    public HourLog getHourLog(UUID id) {
-        return hourLogRepository.findByIdOptional(id)
-                .orElseThrow(() -> new HourLogNotFoundException(id));
-    }
+    /**
+     * Deletes an hour log by ID.
+     *
+     * @param id hour log ID
+     */
+    void deleteHourLog(UUID id);
 
-    @Transactional
-    public HourLog createHourLog(CreateHourLogCommand command) {
-        Volunteer volunteer = volunteerRepository.findByIdOptional(command.volunteerId())
-                .orElseThrow(() -> new VolunteerNotFoundException(command.volunteerId()));
-
-        Event event = eventRepository.findByIdOptional(command.eventId())
-                .orElseThrow(() -> new EventNotFoundException(command.eventId()));
-
-        if (command.hoursWorked() <= 0) {
-            throw new ValidationException("hoursWorked must be greater than 0");
-        }
-
-        if (command.workDate().isBefore(event.startDate) || command.workDate().isAfter(event.endDate)) {
-            throw new ValidationException("workDate must be within the event time range");
-        }
-
-        HourLog hourLog = new HourLog();
-        hourLog.id = UUID.randomUUID();
-        hourLog.volunteer = volunteer;
-        hourLog.event = event;
-        hourLog.eventRole = command.eventRole();
-        hourLog.workDate = command.workDate();
-        hourLog.hoursWorked = command.hoursWorked();
-        hourLog.description = command.description();
-        hourLog.submittedAt = OffsetDateTime.now();
-
-        hourLogRepository.persist(hourLog);
-        return hourLog;
-    }
-
-    @Transactional
-    public HourLog updateHourLog(UUID id, UpdateHourLogCommand command) {
-        HourLog hourLog = hourLogRepository.findByIdOptional(id)
-                .orElseThrow(() -> new HourLogNotFoundException(id));
-
-        Volunteer currentVolunteer = hourLog.volunteer;
-        Event currentEvent = hourLog.event;
-
-        if (command.volunteerId() != null) {
-            currentVolunteer = volunteerRepository.findByIdOptional(command.volunteerId())
-                    .orElseThrow(() -> new VolunteerNotFoundException(command.volunteerId()));
-        }
-
-        if (command.eventId() != null) {
-            currentEvent = eventRepository.findByIdOptional(command.eventId())
-                    .orElseThrow(() -> new EventNotFoundException(command.eventId()));
-        }
-
-        OffsetDateTime effectiveWorkDate = command.workDate() != null ? command.workDate() : hourLog.workDate;
-
-        if (effectiveWorkDate.isBefore(currentEvent.startDate) || effectiveWorkDate.isAfter(currentEvent.endDate)) {
-            throw new ValidationException("workDate must be within the event time range");
-        }
-
-        if (command.hoursWorked() != null && command.hoursWorked() <= 0) {
-            throw new ValidationException("hoursWorked must be greater than 0");
-        }
-
-        hourLog.volunteer = currentVolunteer;
-        hourLog.event = currentEvent;
-
-        if (command.eventRole() != null) {
-            hourLog.eventRole = command.eventRole();
-        }
-
-        hourLog.workDate = effectiveWorkDate;
-
-        if (command.hoursWorked() != null) {
-            hourLog.hoursWorked = command.hoursWorked();
-        }
-
-        if (command.description() != null) {
-            hourLog.description = command.description();
-        }
-
-        return hourLog;
-    }
-
-    @Transactional
-    public void deleteHourLog(UUID id) {
-        HourLog hourLog = hourLogRepository.findByIdOptional(id)
-                .orElseThrow(() -> new HourLogNotFoundException(id));
-
-        hourLogRepository.delete(hourLog);
-    }
 }
